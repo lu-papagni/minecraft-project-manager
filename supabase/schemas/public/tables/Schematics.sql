@@ -10,3 +10,67 @@ alter table "public"."Schematics"
   enable row level security;
 
 grant delete, insert, maintain, references, select, trigger, truncate, update on table "public"."Schematics" to "anon", "authenticated", "postgres", "service_role";
+
+-- RLS Policies
+
+create policy "anon_select_public_schematics"
+  on public."Schematics"
+  for select
+  to anon
+  using (
+    exists (
+      select 1 from public."Builds" b
+      join public."Projects" p on p.id = b.project
+      where b.schematic = "Schematics".id
+        and p."public" = true
+    )
+  );
+
+create policy "authenticated_select_all_schematics"
+  on public."Schematics"
+  for select
+  to authenticated
+  using (true);
+
+create policy "authenticated_insert_schematics"
+  on public."Schematics"
+  for insert
+  to authenticated
+  with check (true);
+
+create policy "contributor_update_schematics"
+  on public."Schematics"
+  for update
+  to authenticated
+  using (
+    exists (
+      select 1 from public."Builds" b
+      join public."Contributions" c on c.project = b.project
+      join public."Users" u on u.id = c."user"
+      where b.schematic = "Schematics".id
+        and u.authenticated_user = (select auth.uid())
+    )
+  )
+  with check (
+    exists (
+      select 1 from public."Builds" b
+      join public."Contributions" c on c.project = b.project
+      join public."Users" u on u.id = c."user"
+      where b.schematic = "Schematics".id
+        and u.authenticated_user = (select auth.uid())
+    )
+  );
+
+create policy "contributor_delete_schematics"
+  on public."Schematics"
+  for delete
+  to authenticated
+  using (
+    exists (
+      select 1 from public."Builds" b
+      join public."Contributions" c on c.project = b.project
+      join public."Users" u on u.id = c."user"
+      where b.schematic = "Schematics".id
+        and u.authenticated_user = (select auth.uid())
+    )
+  );

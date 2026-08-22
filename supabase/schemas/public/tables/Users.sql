@@ -12,3 +12,18 @@ alter table "public"."Users"
   enable row level security;
 
 grant delete, insert, maintain, references, select, trigger, truncate, update on table "public"."Users" to "anon", "authenticated", "postgres", "service_role";
+
+-- RLS Policies
+
+create policy "anyone_select_users"
+  on public."Users"
+  for select
+  to anon, authenticated
+  using (true);
+
+create policy "own_profile_update"
+  on public."Users"
+  for update
+  to authenticated
+  using (authenticated_user = (select auth.uid()))
+  with check (authenticated_user = (select auth.uid()));

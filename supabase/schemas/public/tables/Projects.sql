@@ -15,3 +15,62 @@ alter table "public"."Projects"
   enable row level security;
 
 grant delete, insert, maintain, references, select, trigger, truncate, update on table "public"."Projects" to "anon", "authenticated", "postgres", "service_role";
+
+-- Trigger: auto-add owner as first contributor
+create trigger trg_auto_contributor
+  after insert on public."Projects"
+  for each row
+  execute function public.auto_add_owner_as_contributor();
+
+-- RLS Policies
+
+create policy "anon_select_public_projects"
+  on public."Projects"
+  for select
+  to anon
+  using ("public" = true);
+
+create policy "authenticated_select_all_projects"
+  on public."Projects"
+  for select
+  to authenticated
+  using (true);
+
+create policy "authenticated_insert_projects"
+  on public."Projects"
+  for insert
+  to authenticated
+  with check (true);
+
+create policy "contributor_update_projects"
+  on public."Projects"
+  for update
+  to authenticated
+  using (
+    exists (
+      select 1 from public."Contributions" c
+      join public."Users" u on u.id = c."user"
+      where c.project = "Projects".id
+        and u.authenticated_user = (select auth.uid())
+    )
+  )
+  with check (
+    exists (
+      select 1 from public."Contributions" c
+      join public."Users" u on u.id = c."user"
+      where c.project = "Projects".id
+        and u.authenticated_user = (select auth.uid())
+    )
+  );
+
+create policy "owner_delete_projects"
+  on public."Projects"
+  for delete
+  to authenticated
+  using (
+    exists (
+      select 1 from public."Users" u
+      where u.id = "Projects".created_by
+        and u.authenticated_user = (select auth.uid())
+    )
+  );
