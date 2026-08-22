@@ -18,6 +18,8 @@ This project uses [Supabase CLI](https://supabase.com/docs/guides/local-developm
 
 ### Commands
 
+Take a look at `package.json` for custom helper scripts.
+
 - **Pull remote declarative schema** (overwrites `supabase/schemas/` from linked project `dsrrkfwtbjlymixfwmtc`, does not create migrations):
   ```bash
   npm run db:pull
@@ -27,4 +29,8 @@ This project uses [Supabase CLI](https://supabase.com/docs/guides/local-developm
   ```bash
   npm run db:push
   # equivalent to: npx supabase db push --linked
+  ```
+- **Generate fresh TypeScript types**:
+  ```bash
+  npm run db:types
   ```

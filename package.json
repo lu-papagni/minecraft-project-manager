@@ -1,7 +1,8 @@
 {
   "scripts": {
     "db:pull": "supabase db pull --declarative --linked",
-    "db:push": "supabase db push --linked"
+    "db:push": "supabase db push --linked",
+    "db:types": "supabase gen types typescript --linked > supabase/database.types.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3"
