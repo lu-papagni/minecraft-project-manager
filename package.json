@@ -1,5 +1,12 @@
 {
+  "scripts": {
+    "db:pull": "supabase db pull --declarative --linked",
+    "db:push": "supabase db push --linked"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3"
+  },
+  "devDependencies": {
+    "supabase": "^2.115.0"
   }
 }

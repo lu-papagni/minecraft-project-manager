@@ -11,3 +11,20 @@
 ### Special directories
 
 - **Brainstorming**: put here all researches and notes taken while exploring ideas.
+
+## Supabase / Database
+
+This project uses [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) with declarative schema (`experimental.pgdelta.enabled = true`). The canonical schema lives in `supabase/schemas/`.
+
+### Commands
+
+- **Pull remote declarative schema** (overwrites `supabase/schemas/` from linked project `dsrrkfwtbjlymixfwmtc`, does not create migrations):
+  ```bash
+  npm run db:pull
+  # equivalent to: npx supabase db pull --declarative --linked
+  ```
+- **Push local declarative schema to remote**:
+  ```bash
+  npm run db:push
+  # equivalent to: npx supabase db push --linked
+  ```
