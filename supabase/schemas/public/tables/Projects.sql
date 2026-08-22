@@ -5,6 +5,7 @@ create table "public"."Projects" (
   "name"         character varying        not null default ''::character varying,
   "description"  text                     not null default ''::text,
   "completed_at" timestamp with time zone,
+  "public"       boolean                  not null default true,
   constraint "Projects_name_key" unique (name),
   constraint "Projects_pkey" primary key (id),
   constraint "Projects_created_by_fkey" foreign key (created_by) references public."Users"(id) on update cascade on delete set null
