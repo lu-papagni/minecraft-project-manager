@@ -1,11 +1,11 @@
 ---
 name: obsidian-cli
-description: Use when the user wants to interact with an Obsidian vault from the terminal — reading, creating, searching, or editing notes, managing tasks/tags/properties, or scripting vault automation.
+description: Use when the user wants to interact with an Obsidian vault from the terminal — reading, creating, searching, or editing notes, managing tasks/tags/properties, or scripting vault automation. Requires Obsidian 1.12.7+ with CLI enabled and the app running.
 ---
 
 # Obsidian CLI
 
-Requires: Obsidian app **running** (auto-launches on first command).
+Requires: Obsidian app **running** (auto-launches on first command) + CLI enabled in Settings → General.
 
 ## Core mechanics
 
@@ -67,6 +67,23 @@ obsidian vault info=name|path|files|folders|size
 obsidian files [folder=X] [ext=md] [total]
 obsidian file [file=X]                         # file metadata
 ```
+
+## Safe content escaping (avoid GUI "syntax error" on create/append)
+
+Symptom: `obsidian create path=X content=<long string>` fails or Obsidian shows a syntax/parse error, so the agent gives up and writes the file directly instead.
+
+**Root cause is almost always the shell, not Obsidian.** The `content=` value passes through your shell before the CLI ever sees it. If the string contains unescaped `"`, literal newlines instead of `\n`, backticks, or `$`, the shell mangles or truncates the argument — Obsidian then receives malformed/partial content and errors on parsing it.
+
+Checklist before sending long/complex `content=`:
+- Use `\n` and `\t` escapes, never real line breaks, inside the quoted value.
+- Escape every `"` in the content as `\"` (or switch outer quoting to single quotes if the shell allows it and the content has no single quotes).
+- Escape or avoid literal `` ` `` and `$` (shell will otherwise try to execute/interpolate them).
+- Escape backslashes (`\` → `\\`) before they collide with the CLI's own `\n`/`\t` escapes — this matters for Windows paths or LaTeX-like content.
+- For large notes, prefer building the string programmatically (e.g. via a script that JSON/shell-escapes it) rather than hand-typing a long inline string.
+- If content is too complex to escape reliably, split it: `create` with a short/empty body, then one or more `append` calls with smaller, individually-escaped chunks.
+- As a last resort — not a first one — writing the file directly to disk is fine, but only after ruling out shell escaping as the cause; don't abandon the CLI on the first error.
+
+**Known separate bug — payload size, not just escaping.** Independent of shell escaping, large `content=` values can crash the CLI's IPC layer with a JSON parse error even when perfectly escaped: reports show `create` succeeding at ~4KB of content but crashing past ~8KB, with the failure happening in Obsidian's main process before any vault/plugin code runs. If a long, correctly-escaped `create`/`append` still fails, don't assume it's your escaping — split the content into multiple smaller `append` calls (well under 4KB each) instead of one large `create`.
 
 ## Gotchas
 
