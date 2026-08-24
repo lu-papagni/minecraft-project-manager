@@ -5,6 +5,7 @@ create table "public"."Builds" (
   "coord_x"    real,
   "coord_y"    real,
   "coord_z"    real,
+  "dimension"  "public"."dimension"   not null default 'overworld'::"public"."dimension",
   constraint "Builds_pkey" primary key (project, schematic),
   constraint "Builds_project_fkey" foreign key (project) references public."Projects"(id) on update cascade on delete cascade,
   constraint "Builds_schematic_fkey" foreign key (schematic) references public."Schematics"(id) on update cascade on delete cascade
