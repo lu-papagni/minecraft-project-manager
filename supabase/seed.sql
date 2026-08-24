@@ -83,19 +83,19 @@ SELECT setval(
 -- ---------------------------------------------------------------------------
 -- 12 builds  (project, schematic) is PK; coordinates are optional
 -- ---------------------------------------------------------------------------
-INSERT INTO public."Builds" (project, schematic, coord_x, coord_y, coord_z) VALUES
-  (1,  1,  100.5,  64.0,  200.5),   -- Spawn Castle  + medieval_wall
-  (1,  2,  110.0,  64.0,  200.0),   -- Spawn Castle  + castle_gate
-  (2,  3,    0.0,  64.0,    0.0),   -- Nether Hub    + nether_portal_frame
-  (3,  4,  500.0,  70.0, -300.0),   -- Ender Farm    + ender_pearl_farm
-  (4,  5,  -200.0, 64.0,  150.0),   -- Redstone Comp + redstone_alu
-  (5,  6,  800.0,  45.0,  800.0),   -- Ocean Base    + ocean_guardian_chamber
-  (6,  7, -600.0,  64.0, -600.0),   -- Desert Pyr    + desert_pyramid_top
-  (7,  8,    0.0, 100.0,    0.0),   -- Skyblock Hub  + skyblock_hub
-  (8,  9,  250.0,  64.0,  250.0),   -- Villager Hall + villager_hall
-  (9, 10,  300.0,  64.0, -100.0),   -- Iron Farm     + iron_golem_spawner
-  (10, 11, 1000.0, 80.0, 1000.0),   -- Mansion       + mansion_roof
-  (10, 12, 1005.0, 82.0, 1005.0)    -- Mansion       + mansion_library
+INSERT INTO public."Builds" (project, schematic, coord_x, coord_y, coord_z, dimension) VALUES
+  (1,  1,  100.5,  64.0,  200.5, 'overworld'),   -- Spawn Castle  + medieval_wall
+  (1,  2,  110.0,  64.0,  200.0, 'overworld'),   -- Spawn Castle  + castle_gate
+  (2,  3,    0.0,  64.0,    0.0, 'nether'),      -- Nether Hub    + nether_portal_frame
+  (3,  4,  500.0,  70.0, -300.0, 'end'),         -- Ender Farm    + ender_pearl_farm
+  (4,  5,  -200.0, 64.0,  150.0, 'overworld'),   -- Redstone Comp + redstone_alu
+  (5,  6,  800.0,  45.0,  800.0, 'overworld'),   -- Ocean Base    + ocean_guardian_chamber
+  (6,  7, -600.0,  64.0, -600.0, 'overworld'),   -- Desert Pyr    + desert_pyramid_top
+  (7,  8,    0.0, 100.0,    0.0, 'overworld'),   -- Skyblock Hub  + skyblock_hub
+  (8,  9,  250.0,  64.0,  250.0, 'overworld'),   -- Villager Hall + villager_hall
+  (9, 10,  300.0,  64.0, -100.0, 'overworld'),   -- Iron Farm     + iron_golem_spawner
+  (10, 11, 1000.0, 80.0, 1000.0, 'overworld'),   -- Mansion       + mansion_roof
+  (10, 12, 1005.0, 82.0, 1005.0, 'overworld')    -- Mansion       + mansion_library
 ON CONFLICT (project, schematic) DO NOTHING;
 
 -- ---------------------------------------------------------------------------
